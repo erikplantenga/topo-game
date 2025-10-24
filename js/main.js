@@ -306,6 +306,8 @@ function startGame() {
   
   game.playerName = name;
   game.score = 5;
+  game.running = true;
+  game.scoreSaved = false;
   game.droneHitCount = 0; // Reset drone hits
   game.usedMissions = [];
   
@@ -402,6 +404,8 @@ function startGame() {
   
   // Game loop
   function gameLoop() {
+    if (!game.running) return; // Stop als game niet meer loopt
+    
     // Beweeg helikopter
     if (game.keys['ArrowUp']) game.position.y -= game.speed;
     if (game.keys['ArrowDown']) game.position.y += game.speed;
@@ -785,6 +789,10 @@ function checkHighscore() {
 }
 
 async function saveHighscore() {
+  // Voorkom dubbele saves
+  if (game.scoreSaved) return;
+  game.scoreSaved = true;
+  
   try {
     // Sla op in Firebase
     await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, 'highscores'), {
