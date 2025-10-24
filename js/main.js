@@ -294,7 +294,8 @@ function showNameInput() {
           <li>❌ <strong>Fout antwoord:</strong> -1 tot -5 punten</li>
           <li>🛸 <strong>3x geraakt door drone:</strong> Game Over! 💔💔💔</li>
           <li>😢 <strong>Score onder 0:</strong> Game Over!</li>
-          <li>🏆 <strong>20 vragen goed:</strong> Gewonnen!</li>
+          <li>❌ <strong>5 vragen fout:</strong> Game Over!</li>
+          <li>♾️ <strong>Oneindig doorspelen:</strong> Zo lang mogelijk overleven!</li>
         </ul>
         
         <h3>🎮 Besturing</h3>
@@ -597,10 +598,11 @@ function spawnDrone() {
 }
 
 function repositionDroneOverNetherlands(drone) {
-  const MIN_DISTANCE = 100; // Minimale afstand tussen drones
+  // Minimale afstand aangepast voor mobiel/tablet/desktop
+  const MIN_DISTANCE = window.innerWidth < 768 ? 80 : window.innerWidth < 1024 ? 100 : 120;
   
-  // Probeer maximaal 200 keer een positie te vinden
-  for (let attempt = 0; attempt < 200; attempt++) {
+  // Probeer maximaal 300 keer een positie te vinden
+  for (let attempt = 0; attempt < 300; attempt++) {
     const testX = Math.random() * (window.innerWidth - 100) + 50;
     const testY = Math.random() * (window.innerHeight - 100) + 50;
     
@@ -619,6 +621,20 @@ function repositionDroneOverNetherlands(drone) {
         if (distance < MIN_DISTANCE) {
           tooClose = true;
           break;
+        }
+      }
+      
+      // Ook checken dat drone niet te dicht bij helicopter is
+      if (!tooClose && game.helicopter) {
+        const heliRect = game.helicopter.getBoundingClientRect();
+        const heliX = heliRect.left + heliRect.width / 2;
+        const heliY = heliRect.top + heliRect.height / 2;
+        const dxHeli = testX - heliX;
+        const dyHeli = testY - heliY;
+        const distanceToHeli = Math.sqrt(dxHeli * dxHeli + dyHeli * dyHeli);
+        
+        if (distanceToHeli < MIN_DISTANCE * 1.5) {
+          tooClose = true;
         }
       }
       
@@ -848,16 +864,7 @@ function updateScore() {
     }, 100);
   }
   
-  // Check gewonnen (20 goede antwoorden)
-  if (game.correctAnswers >= 20 && !game.gameOver) {
-    game.gameOver = true;
-    setTimeout(() => {
-      showFeedback('🎉 GEWONNEN! Je hebt 20 vragen goed beantwoord! 🏆', true);
-      setTimeout(() => {
-        endGame(true);
-      }, 2000);
-    }, 100);
-  }
+  // Oneindig doorspelen - geen stop bij 20 vragen meer!
 }
 
 
