@@ -100,6 +100,8 @@ const game = {
   usedMissions: [],
   transportStep: 0,
   keys: {},
+  correctAnswers: 0,
+  wrongAnswers: 0,
   // Coördinaten voor Waddeneilanden en Waddenzee (relatief t.o.v. SVG viewBox)
 };
 
@@ -332,6 +334,8 @@ function startGame() {
   game.scoreSaved = false;
   game.gameOver = false;
   game.droneHitCount = 0; // Reset drone hits
+  game.correctAnswers = 0; // Reset correct answers
+  game.wrongAnswers = 0; // Reset wrong answers
   game.usedMissions = [];
   
   // Verwijder naam scherm
@@ -524,8 +528,8 @@ function newMission() {
   game.transportStep = 0;
   game.questionsAnswered++;
   
-  // Spawn drone elke 3 vragen (max 5 drones)
-  if (game.questionsAnswered % 3 === 0 && game.drones.length < 5) {
+  // Spawn drone elke 3 vragen (max 10 drones)
+  if (game.questionsAnswered % 3 === 0 && game.drones.length < 10) {
     spawnDrone();
   }
   
@@ -559,6 +563,11 @@ function newMission() {
 }
 
 function spawnDrone() {
+  // Max 10 drones
+  if (game.drones.length >= 10) {
+    return;
+  }
+  
   // Langzamer op mobiel
   const droneSpeed = window.innerWidth < 768 ? 0.3 : 1.0;
   
@@ -570,7 +579,7 @@ function spawnDrone() {
     element: document.createElement('div')
   };
   
-  // Positioneer drone boven Nederland
+  // Positioneer drone boven Nederland ZONDER overlap
   repositionDroneOverNetherlands(drone);
   
   drone.element.className = 'drone';
@@ -582,27 +591,48 @@ function spawnDrone() {
   game.drones.push(drone);
   
   showFeedback(`WAARSCHUWING: Drone ${game.drones.length} gespot!`, false);
+  
+  // Speel drone alarm
+  playDroneAlarm();
 }
 
 function repositionDroneOverNetherlands(drone) {
-  // Probeer maximaal 100 keer een positie te vinden boven Nederland
-  for (let i = 0; i < 100; i++) {
+  const MIN_DISTANCE = 100; // Minimale afstand tussen drones
+  
+  // Probeer maximaal 200 keer een positie te vinden
+  for (let attempt = 0; attempt < 200; attempt++) {
     const testX = Math.random() * (window.innerWidth - 100) + 50;
     const testY = Math.random() * (window.innerHeight - 100) + 50;
     
+    // Check of positie boven Nederland is
     const elements = document.elementsFromPoint(testX, testY);
     const overNederland = elements.find(el => el.tagName === 'path' && el.id);
     
     if (overNederland) {
-      drone.x = testX;
-      drone.y = testY;
-      return;
+      // Check of deze positie ver genoeg van andere drones is
+      let tooClose = false;
+      for (const existingDrone of game.drones) {
+        const dx = testX - existingDrone.x;
+        const dy = testY - existingDrone.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < MIN_DISTANCE) {
+          tooClose = true;
+          break;
+        }
+      }
+      
+      if (!tooClose) {
+        drone.x = testX;
+        drone.y = testY;
+        return;
+      }
     }
   }
   
-  // Fallback: centrum van het scherm
-  drone.x = window.innerWidth / 2;
-  drone.y = window.innerHeight / 2;
+  // Fallback: random positie in scherm (zonder overlap check)
+  drone.x = Math.random() * (window.innerWidth - 100) + 50;
+  drone.y = Math.random() * (window.innerHeight - 100) + 50;
 }
 
 function endGame(saveScore = true) {
@@ -714,11 +744,13 @@ function checkLanding() {
       // Eerste stap: ophalen
       if (locationId === game.currentMission.target) {
         game.transportStep = 1;
+        game.correctAnswers++;
         showFeedback('Top! 👍 Nu naar ' + getLocationName(game.currentMission.destination) + '!', true);
         const missionDisplay = document.getElementById('mission');
         missionDisplay.textContent = 'Breng naar ' + getLocationName(game.currentMission.destination);
       } else {
         game.score -= points;
+        game.wrongAnswers++;
         updateScore();
         showFeedback(getChildFriendlyError(locationId, game.currentMission.target, points), false);
         setTimeout(newMission, 1500);
@@ -727,11 +759,13 @@ function checkLanding() {
       // Tweede stap: afleveren
       if (locationId === game.currentMission.destination) {
         game.score += points;
+        game.correctAnswers++;
         updateScore();
         showFeedback(`Super! 🎉 +${points} ${points === 1 ? 'punt' : 'punten'}`, true);
         setTimeout(newMission, 2000);
       } else {
         game.score -= points;
+        game.wrongAnswers++;
         updateScore();
         showFeedback(getChildFriendlyError(locationId, game.currentMission.destination, points), false);
         setTimeout(newMission, 1500);
@@ -741,11 +775,13 @@ function checkLanding() {
     // Normale missie
     if (locationId === game.currentMission.target) {
       game.score += points;
+      game.correctAnswers++;
       updateScore();
       showFeedback(`Super! 🎉 +${points} ${points === 1 ? 'punt' : 'punten'}`, true);
       setTimeout(newMission, 2000);
     } else {
       game.score -= points;
+      game.wrongAnswers++;
       updateScore();
       showFeedback(getChildFriendlyError(locationId, game.currentMission.target, points), false);
       setTimeout(newMission, 1500);
@@ -794,6 +830,18 @@ function updateScore() {
     setTimeout(() => {
       playGameOverSound();
       showFeedback('GAME OVER! Je score is onder 0 gekomen 😢', false);
+      setTimeout(() => {
+        endGame(true);
+      }, 2000);
+    }, 100);
+  }
+  
+  // Check game over (5 foute antwoorden)
+  if (game.wrongAnswers >= 5 && !game.gameOver) {
+    game.gameOver = true;
+    setTimeout(() => {
+      playGameOverSound();
+      showFeedback('GAME OVER! Je hebt 5 vragen fout beantwoord 😢', false);
       setTimeout(() => {
         endGame(true);
       }, 2000);
