@@ -593,25 +593,37 @@ body {
 
 /* Responsive aanpassingen voor mobiel/tablet */
 @media (max-width: 768px) {
+  /* Verberg pijltjestoetsen instructies op mobiel */
+  #instructions {
+    display: none;
+  }
+  
+  /* Verberg highscore panel op mobiel */
+  #highscore-panel {
+    display: none !important;
+  }
+  
   #mission {
     font-size: 12px;
     padding: 8px 12px;
     max-width: 80%;
     top: 8px;
+    left: 8px; /* Links uitlijnen */
+    transform: none; /* Verwijder center transform */
     line-height: 1.3;
   }
   
   #score {
     font-size: 14px;
     top: 60px;
-    right: 8px;
+    left: 8px; /* Links in plaats van rechts */
     padding: 8px 12px;
   }
   
   #drone-lives {
     font-size: 16px;
     top: 105px;
-    right: 8px;
+    left: 8px; /* Links in plaats van rechts */
     padding: 6px 10px;
   }
   
