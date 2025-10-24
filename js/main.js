@@ -308,6 +308,7 @@ function startGame() {
   game.score = 5;
   game.running = true;
   game.scoreSaved = false;
+  game.gameOver = false;
   game.droneHitCount = 0; // Reset drone hits
   game.usedMissions = [];
   
@@ -465,8 +466,9 @@ function startGame() {
         updateScore();
         updateDroneLives();
         
-        if (game.droneHitCount >= 3) {
+        if (game.droneHitCount >= 3 && !game.gameOver) {
           // Game Over - 3x geraakt
+          game.gameOver = true;
           playGameOverSound();
           showFeedback('Helaas, je bent af! 💔💔💔', false);
           setTimeout(() => {
@@ -730,7 +732,8 @@ function updateScore() {
   updateLiveHighscores();
   
   // Check game over (onder 0 punten)
-  if (game.score < 0) {
+  if (game.score < 0 && !game.gameOver) {
+    game.gameOver = true;
     setTimeout(() => {
       playGameOverSound();
       showFeedback('GAME OVER! Je score is onder 0 gekomen 😢', false);
@@ -741,11 +744,12 @@ function updateScore() {
   }
   
   // Check gewonnen (20 goede antwoorden)
-  if (game.correctAnswers >= 20) {
+  if (game.correctAnswers >= 20 && !game.gameOver) {
+    game.gameOver = true;
     setTimeout(() => {
       showFeedback('🎉 GEWONNEN! Je hebt 20 vragen goed beantwoord! 🏆', true);
       setTimeout(() => {
-        saveHighscore();
+        endGame(true);
       }, 2000);
     }, 100);
   }
