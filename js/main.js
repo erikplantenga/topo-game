@@ -573,9 +573,14 @@ function repositionDroneOverNetherlands(drone) {
   drone.y = window.innerHeight / 2;
 }
 
-function endGame() {
-  if (confirm(`Weet je zeker dat je wilt stoppen?\n\nJe huidige score is: ${game.score} punten`)) {
+function endGame(saveScore = true) {
+  game.running = false; // Stop game loop
+  
+  if (saveScore) {
     saveHighscore();
+  } else {
+    // Direct naar highscore scherm zonder opslaan
+    showHighscoresAfterGame();
   }
 }
 
