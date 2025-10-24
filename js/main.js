@@ -298,7 +298,7 @@ function showNameInput() {
         
         <p style="margin-top: 15px; font-size: 14px; color: #666;">
           Vlieg naar de juiste provincie en land met Spatie (of LAND knop).<br>
-          Ontwijg de drones! Elke 3 vragen komt er een nieuwe drone bij.
+          Ontwijk de drones! Elke 3 vragen komt er een nieuwe drone bij.
         </p>
       </div>
       
