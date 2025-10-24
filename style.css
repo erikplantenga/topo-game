@@ -740,6 +740,19 @@ body {
     max-width: 85%;
   }
   
+  
+/* iPad specific - zorg dat spelregels zichtbaar zijn */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .game-rules {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .name-box {
+    max-width: 600px;
+  }
+}
+
   /* Touch controls kleiner op telefoon */
   .touch-dpad {
     width: 140px;
