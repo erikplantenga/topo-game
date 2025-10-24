@@ -224,19 +224,25 @@ body {
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   text-align: center;
-  max-width: 400px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .name-box h1 {
   margin: 0 0 20px 0;
   color: #333;
   font-size: 32px;
+  order: 1;
 }
 
 .name-box p {
   margin: 0 0 15px 0;
   color: #666;
   font-size: 18px;
+  order: 2;
 }
 
 .name-box input {
@@ -247,6 +253,7 @@ body {
   border-radius: 8px;
   margin-bottom: 15px;
   box-sizing: border-box;
+  order: 3;
 }
 
 .name-box input:focus {
@@ -276,6 +283,14 @@ body {
 }
 
 #start-btn {
+  order: 4;
+}
+
+#highscore-btn {
+  order: 5;
+}
+
+#start-btn {
   background: #4CAF50;
   color: white;
 }
@@ -285,16 +300,17 @@ body {
   color: white;
 }
 
-/* Game rules styling */
+/* Game rules styling - ALTIJD ONDERAAN */
 .game-rules {
+  order: 6;
   text-align: left;
-  margin: 20px 0;
+  margin: 20px 0 0 0;
   padding: 15px;
   background: #f8f9fa;
   border-radius: 8px;
   font-size: 14px;
-  max-height: 350px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
 }
 
 .game-rules h3 {
@@ -788,15 +804,24 @@ body {
   }
   
   
-/* iPad specific - zorg dat spelregels zichtbaar zijn */
+/* iPad specific - zelfde volgorde als mobiel */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .game-rules {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-  
   .name-box {
     max-width: 600px;
+    padding: 35px;
+  }
+  
+  .name-box h1 {
+    font-size: 28px;
+  }
+  
+  .name-box p {
+    font-size: 16px;
+  }
+  
+  .game-rules {
+    font-size: 13px;
+    padding: 15px;
   }
 }
 
