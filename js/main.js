@@ -443,18 +443,19 @@ function startGame() {
       const newX = drone.x + drone.vx;
       const newY = drone.y + drone.vy;
       
-      // Check of nieuwe positie boven Nederland is
-      const elements = document.elementsFromPoint(newX + 15, newY + 15);
-      const overNederland = elements.find(el => el.tagName === 'path' && el.id);
+      // Beweeg drone (soepele boundary check)
+      drone.x = newX;
+      drone.y = newY;
       
-      // Als boven Nederland, beweeg. Anders bounce terug
-      if (overNederland) {
-        drone.x = newX;
-        drone.y = newY;
-      } else {
-        // Bounce: keer richting om
+      // Beperk binnen scherm met margin
+      const margin = 50;
+      if (drone.x < margin || drone.x > window.innerWidth - margin) {
         drone.vx *= -1;
+        drone.x = Math.max(margin, Math.min(window.innerWidth - margin, drone.x));
+      }
+      if (drone.y < margin || drone.y > window.innerHeight - margin) {
         drone.vy *= -1;
+        drone.y = Math.max(margin, Math.min(window.innerHeight - margin, drone.y));
       }
       
       drone.element.style.left = drone.x + 'px';
