@@ -277,11 +277,33 @@ function showNameInput() {
   nameScreen.id = 'name-screen';
   nameScreen.innerHTML = `
     <div class="name-box">
-      <h1>🚁 Helikopter Topografie</h1>
+      <h1>🚁 Topo Game</h1>
       <p>Voer je naam in:</p>
       <input type="text" id="player-name" maxlength="15" placeholder="Je naam">
+      
+      <div class="game-rules">
+        <h3>📋 Spelregels</h3>
+        <ul>
+          <li>🎯 <strong>Start met 5 punten</strong></li>
+          <li>✅ <strong>Goed antwoord:</strong> +1 tot +5 punten (afhankelijk van moeilijkheid ⭐)</li>
+          <li>❌ <strong>Fout antwoord:</strong> -1 tot -5 punten</li>
+          <li>🛸 <strong>3x geraakt door drone:</strong> Game Over! 💔💔💔</li>
+          <li>😢 <strong>Score onder 0:</strong> Game Over!</li>
+          <li>🏆 <strong>20 vragen goed:</strong> Gewonnen!</li>
+        </ul>
+        
+        <h3>🎮 Besturing</h3>
+        <p><strong>Desktop:</strong> Pijltjestoetsen + Spatie om te landen</p>
+        <p><strong>Mobiel:</strong> D-pad + LAND knop</p>
+        
+        <p style="margin-top: 15px; font-size: 14px; color: #666;">
+          Vlieg naar de juiste provincie en land met Spatie (of LAND knop).<br>
+          Ontwijg de drones! Elke 3 vragen komt er een nieuwe drone bij.
+        </p>
+      </div>
+      
       <button id="start-btn">Start Spel</button>
-      <button id="highscore-btn">Bekijk Highscores</button>
+      <button id="highscore-btn">Bekijk Top 10</button>
     </div>
   `;
   document.body.appendChild(nameScreen);
