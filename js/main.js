@@ -281,6 +281,9 @@ function showNameInput() {
       <p>Voer je naam in:</p>
       <input type="text" id="player-name" maxlength="15" placeholder="Je naam">
       
+      <button id="start-btn">Start Spel</button>
+      <button id="highscore-btn">Bekijk Top 10</button>
+      
       <div class="game-rules">
         <h3>📋 Spelregels</h3>
         <ul>
@@ -301,9 +304,6 @@ function showNameInput() {
           Ontwijk de drones! Elke 3 vragen komt er een nieuwe drone bij.
         </p>
       </div>
-      
-      <button id="start-btn">Start Spel</button>
-      <button id="highscore-btn">Bekijk Top 10</button>
     </div>
   `;
   document.body.appendChild(nameScreen);
