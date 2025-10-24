@@ -1,4 +1,18 @@
 // Helikopter Spel
+
+// Global AudioContext voor Safari compatibility
+let globalAudioContext = null;
+
+function getAudioContext() {
+  if (!globalAudioContext) {
+    globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (globalAudioContext.state === 'suspended') {
+    globalAudioContext.resume();
+  }
+  return globalAudioContext;
+}
+
 const game = {
   helicopter: null,
   position: { x: 300, y: 200 },
@@ -92,6 +106,7 @@ const game = {
 // Audio context voor geluiden
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+
 function playSound(frequency, duration, type = 'sine') {
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
@@ -179,7 +194,8 @@ function createTouchControls() {
 
 
 function playDroneAlarm() {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const audioContext = getAudioContext();
+
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
   
@@ -199,7 +215,8 @@ function playDroneAlarm() {
 }
 
 function playGameOverSound() {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const audioContext = getAudioContext();
+
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
   
