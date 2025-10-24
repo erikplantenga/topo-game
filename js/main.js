@@ -370,7 +370,8 @@ function startGame() {
   let heliSound = null;
   
   // Keyboard controls
-  document.addEventListener('keydown', (e) => {
+  game.keydownHandler = (e) => {
+    if (!game.running) return; // Stop als game niet meer loopt
     game.keys[e.key] = true;
     
     // Start helikopter geluid bij eerste toets
@@ -383,11 +384,15 @@ function startGame() {
       e.preventDefault();
       checkLanding();
     }
-  });
+  };
   
-  document.addEventListener('keyup', (e) => {
+  game.keyupHandler = (e) => {
+    if (!game.running) return;
     game.keys[e.key] = false;
-  });
+  };
+  
+  document.addEventListener('keydown', game.keydownHandler);
+  document.addEventListener('keyup', game.keyupHandler);
   
   // Touch controls voor iPad/mobiel
   createTouchControls();
@@ -491,6 +496,8 @@ function startGame() {
 }
 
 function newMission() {
+  if (game.gameOver || !game.running) return; // Stop als game over
+  
   game.transportStep = 0;
   game.questionsAnswered++;
   
@@ -577,11 +584,38 @@ function repositionDroneOverNetherlands(drone) {
 
 function endGame(saveScore = true) {
   game.running = false; // Stop game loop
+  game.gameOver = true; // Mark as game over
+  
+  // Verwijder ALL event listeners
+  document.removeEventListener('keydown', game.keydownHandler);
+  document.removeEventListener('keyup', game.keyupHandler);
+  
+  // Verberg helicopter en drones
+  if (game.helicopter) game.helicopter.style.display = 'none';
+  game.drones.forEach(drone => {
+    if (drone.element) drone.element.style.display = 'none';
+  });
+  
+  // Verberg game UI
+  const mission = document.getElementById('mission');
+  const difficulty = document.getElementById('difficulty');
+  const score = document.getElementById('score');
+  const instructions = document.getElementById('instructions');
+  const stopBtn = document.getElementById('stop-btn');
+  const lives = document.getElementById('drone-lives');
+  const touchControls = document.getElementById('touch-controls');
+  
+  if (mission) mission.style.display = 'none';
+  if (difficulty) difficulty.style.display = 'none';
+  if (score) score.style.display = 'none';
+  if (instructions) instructions.style.display = 'none';
+  if (stopBtn) stopBtn.style.display = 'none';
+  if (lives) lives.style.display = 'none';
+  if (touchControls) touchControls.style.display = 'none';
   
   if (saveScore) {
     saveHighscore();
   } else {
-    // Direct naar highscore scherm zonder opslaan
     showHighscoresAfterGame();
   }
 }
