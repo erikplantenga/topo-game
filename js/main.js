@@ -177,6 +177,27 @@ function createTouchControls() {
 }
 
 
+
+function playDroneAlarm() {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  // Siren geluid
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+  oscillator.frequency.setValueAtTime(400, audioContext.currentTime + 0.2);
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.4);
+  
+  gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+
 function playGameOverSound() {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const oscillator = audioContext.createOscillator();
@@ -428,7 +449,7 @@ function startGame() {
           playGameOverSound();
           showFeedback('Helaas, je bent af! 💔💔💔', false);
           setTimeout(() => {
-            endGame(false);
+            endGame(true);
           }, 1500);
         } else {
           const livesLeft = 3 - game.droneHitCount;
@@ -688,7 +709,7 @@ function updateScore() {
       playGameOverSound();
       showFeedback('GAME OVER! Je score is onder 0 gekomen 😢', false);
       setTimeout(() => {
-        saveHighscore();
+        endGame(true);
       }, 2000);
     }, 100);
   }
