@@ -620,13 +620,7 @@ body {
   }
   
   #highscore-panel {
-    top: 155px;
-    left: 8px;
-    font-size: 9px;
-    padding: 5px 8px;
-    min-width: 120px;
-    max-height: 150px;
-    overflow-y: auto;
+    display: none; /* Verberg op mobiel tijdens spel */
   }
   
   #highscore-panel h3 {

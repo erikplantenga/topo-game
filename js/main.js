@@ -359,7 +359,7 @@ function startGame() {
   // Highscore display (altijd zichtbaar)
   const highscorePanel = document.createElement('div');
   highscorePanel.id = 'highscore-panel';
-  highscorePanel.innerHTML = '<h3>🏆 Top 5</h3><ol id="live-highscores"></ol>';
+  highscorePanel.innerHTML = '<h3>🏆 Top 10</h3><ol id="live-highscores"></ol>';
   document.body.appendChild(highscorePanel);
   updateLiveHighscores();
   
@@ -785,7 +785,7 @@ function checkHighscore() {
   // Don't wait for Firebase - just use fallback for now
   const stored = localStorage.getItem('helikopterHighscores');
   const highscores = stored ? JSON.parse(stored) : [];
-  const lowestScore = highscores.length < 5 ? -Infinity : highscores[4].score;
+  const lowestScore = highscores.length < 10 ? -Infinity : highscores[9].score;
   
   if (game.score > lowestScore) {
     // Nieuwe highscore!
@@ -827,7 +827,7 @@ async function saveHighscore() {
       date: new Date().toLocaleDateString('nl-NL')
     });
     highscores.sort((a, b) => b.score - a.score);
-    const top5 = highscores.slice(0, 5);
+    const top5 = highscores.slice(0, 10);
     localStorage.setItem('helikopterHighscores', JSON.stringify(top5));
     showHighscoresAfterGame();
   }
@@ -859,7 +859,7 @@ async function getHighscores() {
 async function showHighscores() {
   const highscores = await getHighscores();
   
-  let html = '<div class="highscore-box"><h2>🏆 Top 5 Highscores</h2>';
+  let html = '<div class="highscore-box"><h2>🏆 Top 10 Highscores</h2>';
   
   if (highscores.length === 0) {
     html += '<p>Nog geen highscores!</p>';
@@ -895,11 +895,11 @@ async function showHighscoresAfterGame() {
   let html = '<div class="highscore-box"><h2>🏆 Spel Afgelopen!</h2>';
   html += `<p class="final-score">Je score: ${game.score} punten</p>`;
   
-  if (playerRank > 0 && playerRank <= 5) {
+  if (playerRank > 0 && playerRank <= 10) {
     html += `<p class="rank-message">🎉 Gefeliciteerd! Je staat op plaats ${playerRank}!</p>`;
   }
   
-  html += '<h3>Top 5 Highscores</h3><ol class="highscore-list">';
+  html += '<h3>Top 10 Highscores</h3><ol class="highscore-list">';
   highscores.forEach((score, index) => {
     const isPlayer = score.name === game.playerName && score.score === game.score;
     html += `<li class="${isPlayer ? 'current-player' : ''}">
